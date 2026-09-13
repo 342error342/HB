@@ -1,535 +1,453 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <base target="_self">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>С Днём Рождения! 🎂</title>
-    <meta name="description" content="открытка">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        "birthday-gold": "#FFD700",
-                        "birthday-pink": "#FF69B4",
-                        "birthday-blue": "#87CEEB",
-                        "birthday-purple": "#9370DB"
-                    },
-                    fontFamily: {
-                        "dancing": ["Dancing Script", "cursive"],
-                        "montserrat": ["Montserrat", "sans-serif"]
-                    },
-                    animation: {
-                        "float": "float 3s ease-in-out infinite",
-                        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
-                        "confetti-fall": "confetti-fall 5s linear infinite",
-                        "flip": "flip 0.6s ease-in-out forwards"
-                    },
-                    keyframes: {
-                        float: {
-                            "0%, 100%": { transform: "translateY(0)" },
-                            "50%": { transform: "translateY(-20px)" }
-                        },
-                        "pulse-glow": {
-                            "0%, 100%": { opacity: 1 },
-                            "50%": { opacity: 0.7 }
-                        },
-                        "confetti-fall": {
-                            "0%": { transform: "translateY(-100px) rotate(0deg)" },
-                            "100%": { transform: "translateY(100vh) rotate(360deg)" }
-                        },
-                        flip: {
-                            "0%": { transform: "rotateY(0deg)" },
-                            "100%": { transform: "rotateY(180deg)" }
-                        }
-                    },
-                    perspective: {
-                        "1000": "1000px"
-                    },
-                    transformStyle: {
-                        "preserve-3d": "preserve-3d"
-                    },
-                    backfaceVisibility: {
-                        "hidden": "hidden"
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .confetti {
-            position: fixed;
-            width: 15px;
-            height: 15px;
-            opacity: 0;
-            z-index: 9999;
-            pointer-events: none;
-        }
-        
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        
-        .flip-card {
-            perspective: 1000px;
-            cursor: pointer;
-            height: 220px;
-        }
-        
-        .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-        
-        .flip-card.flipped .flip-card-inner {
-            transform: rotateY(180deg);
-        }
-        
-        .flip-card-front, .flip-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            border-radius: 1rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 1.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .flip-card-back {
-            transform: rotateY(180deg);
-            overflow-y: auto;
-        }
-        
-        .scroll-indicator {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            40% {
-                transform: translateX(-50%) translateY(-10px);
-            }
-            60% {
-                transform: translateX(-50%) translateY(-5px);
-            }
-        }
-        
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>С ДНЁМ РОЖДЕНИЯ! [ДЕЛЬТАРУН-ОТКРЫТКА]</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: #000;
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    overflow: hidden;
+  }
+  #stage {
+    position: relative;
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .scene { display: none; }
+  .scene.active { display: flex; flex-direction: column; align-items: center; }
 
-        html {
-            scroll-behavior: smooth;
-        }
-        
+  .particle {
+    position: absolute;
+    bottom: -40px;
+    opacity: .7;
+    animation: floatUp linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-110vh) rotate(360deg); }
+  }
 
-        .signature {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            z-index: 100;
-            font-family: 'Montserrat', sans-serif;
-        }
-    </style>
+  #titleScene { gap: 28px; text-align: center; z-index: 2; }
+  #titleScene .soul {
+    font-size: clamp(40px, 8vw, 72px);
+    color: #ff0033;
+    text-shadow: 0 0 18px #ff0033;
+    animation: soulPulse 1.2s ease-in-out infinite;
+  }
+  @keyframes soulPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+  }
+  .press {
+    font-size: clamp(10px, 2.2vw, 16px);
+    animation: blink 1s steps(2) infinite;
+    cursor: pointer;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  #dialogueScene { z-index: 2; width: min(92vw, 720px); }
+  .dbox {
+    background: #000;
+    border: 4px solid #fff;
+    box-shadow: 0 0 0 4px #000, 0 0 0 8px #fff;
+    padding: 22px 24px;
+    min-height: 150px;
+    font-size: clamp(11px, 2.4vw, 17px);
+    line-height: 2;
+    cursor: pointer;
+    position: relative;
+  }
+  .dbox .speaker {
+    position: absolute;
+    top: -14px; left: 16px;
+    background: #000;
+    padding: 0 8px;
+    font-size: clamp(9px, 1.8vw, 12px);
+  }
+  .dbox .text { white-space: pre-wrap; }
+  .dbox .more {
+    position: absolute;
+    bottom: 10px; right: 14px;
+    font-size: 12px;
+    color: #ff0033;
+    animation: blink 0.8s steps(2) infinite;
+    opacity: 0;
+  }
+  .dbox .more.show { opacity: 1; }
+
+  #cardScene { gap: 18px; text-align: center; z-index: 2; padding: 20px; }
+  .grad-text {
+    font-size: clamp(16px, 4vw, 34px);
+    background: linear-gradient(90deg, #ff0033, #ff8800, #ffee00, #00ff66, #00ccff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1.6;
+  }
+  #bigNum {
+    font-size: clamp(64px, 18vw, 160px);
+    color: #00ff66;
+    text-shadow: 4px 4px 0 #ff0033, -4px -4px 0 #00ccff;
+    animation: wobble 0.4s ease-in-out infinite alternate;
+    line-height: 1;
+  }
+  @keyframes wobble { from { transform: rotate(-2deg) scale(1); } to { transform: rotate(2deg) scale(1.04); } }
+  #bigNum.glitching { animation: glitch 0.15s steps(2) infinite; }
+  @keyframes glitch {
+    0% { transform: translate(0); filter: hue-rotate(0deg); }
+    50% { transform: translate(3px, -3px); filter: hue-rotate(90deg); }
+    100% { transform: translate(-3px, 3px); filter: hue-rotate(-90deg); }
+  }
+  .spam {
+    max-width: min(88vw, 640px);
+    font-size: clamp(9px, 2vw, 13px);
+    line-height: 2;
+    color: #ffee00;
+  }
+  .stats {
+    border: 3px solid #fff;
+    padding: 14px 20px;
+    font-size: clamp(8px, 1.8vw, 12px);
+    line-height: 2.2;
+    background: rgba(0,0,0,.6);
+  }
+  .stats b { color: #ff8800; }
+  #nameBox { color: #00ccff; }
+  .controls { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+  .btn {
+    font-family: inherit;
+    font-size: clamp(9px, 1.8vw, 12px);
+    color: #fff;
+    background: #000;
+    border: 3px solid #fff;
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+  .btn:hover { background: #fff; color: #000; }
+  .footer {
+    font-size: clamp(8px, 1.6vw, 10px);
+    color: #888;
+    line-height: 1.8;
+    max-width: 90vw;
+  }
+  .footer .hl { color: #ffee00; }
+</style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-birthday-pink via-birthday-blue to-birthday-purple font-montserrat overflow-x-hidden">
+<body>
+<div id="stage">
 
-    <div id="confetti-container"></div>
-    
-
-    <div class="signature">by error342</div>
-    
-
-    <div class="scroll-indicator">
-        <button onclick="scrollToContent()" class="bg-white/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/30 transition-all duration-300">
-            <i class="fas fa-chevron-down text-2xl"></i>
-        </button>
+  <!-- TITLE -->
+  <div id="titleScene" class="scene active">
+    <div class="soul">&#9829;</div>
+    <div class="grad-text" style="font-size:clamp(12px,3vw,22px); line-height:1.8; text-align:center;">
+      RALSEI PRESENTS<br>A BIRTHDAY QUEST
     </div>
-    
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="press" id="startBtn">- НАЖМИ [Z] ИЛИ КЛИКНИ -</div>
+    <div style="font-size:clamp(8px,1.5vw,10px); color:#888;">(&#9829; = SOUL &nbsp; Z = диалог дальше)</div>
+  </div>
 
-        <header class="text-center mb-12 min-h-screen flex flex-col justify-center">
-            <h1 class="text-5xl md:text-7xl font-dancing font-bold text-birthday-gold mb-6 animate-float">
-                🎉 С Днём Рождения! 🎉
-            </h1>
-            <p class="text-2xl text-white opacity-90 mb-8">
-                Самые тёплые пожелания в этот особенный день!
-            </p>
-            <div class="mt-12 animate-bounce">
-                <p class="text-white/80 mb-4">Прокрутите вниз для открытия сюрпризов</p>
-                <i class="fas fa-chevron-down text-3xl text-white animate-pulse"></i>
-            </div>
-        </header>
-
-        <main class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-10 mb-10" id="main-content">
-
-            <div class="text-center mb-12">
-                <div class="inline-block p-4 bg-gradient-to-r from-birthday-pink to-birthday-purple rounded-full mb-6">
-                    <i class="fas fa-birthday-cake text-5xl text-white animate-pulse-glow"></i>
-                </div>
-                
-                <h2 class="text-4xl font-dancing text-gray-800 mb-8">
-                    Катя!
-                </h2>
-                
-                <div class="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto space-y-6">
-                    <p class="text-xl">
-                        Пусть этот день будет наполнен радостью, улыбками близких и самыми тёплыми пожеланиями!
-                    </p>
-                    <p>
-                        Желаю крепкого здоровья, неиссякаемой энергии, исполнения всех заветных желаний и ярких впечатлений!
-                    </p>
-                    <p>
-                        Пусть каждый новый день приносит только положительные эмоции и новые достижения!
-                    </p>
-                </div>
-            </div>
-
-            <div class="mb-12">
-                <h3 class="text-3xl font-dancing text-center text-gray-800 mb-8">
-                    Нажмите на окошки, чтобы открыть поздравления
-                </h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-                    <div class="flip-card" id="health-card" onclick="flipCard('health')">
-                        <div class="flip-card-inner">
-                            <div class="flip-card-front bg-gradient-to-br from-birthday-blue/20 to-white">
-                                <div class="text-5xl mb-6 text-birthday-blue">
-                                    <i class="fas fa-heart"></i>
-                                </div>
-                                <h4 class="text-2xl font-semibold text-gray-800 mb-3">Здоровья</h4>
-                                <p class="text-gray-600">Нажмите, чтобы открыть</p>
-                                <div class="mt-4 text-sm text-gray-500">
-                                    <i class="fas fa-hand-point-up"></i> Кликните
-                                </div>
-                            </div>
-                            <div class="flip-card-back bg-gradient-to-br from-birthday-blue to-blue-400 text-white">
-                                <h4 class="text-2xl font-bold mb-4">Крепкого здоровья!</h4>
-                                <p class="text-lg mb-3">Желаю тебе богатырского здоровья, бодрости духа и отличного самочувствия каждый день!</p>
-                                <p class="text-sm opacity-90">Пусть никакие болезни не беспокоят, а энергия бьёт ключом!</p>
-                                <div class="mt-4 text-3xl">
-                                    <i class="fas fa-heartbeat"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-
-                    <div class="flip-card" id="happiness-card" onclick="flipCard('happiness')">
-                        <div class="flip-card-inner">
-                            <div class="flip-card-front bg-gradient-to-br from-birthday-pink/20 to-white">
-                                <div class="text-5xl mb-6 text-birthday-pink">
-                                    <i class="fas fa-laugh-beam"></i>
-                                </div>
-                                <h4 class="text-2xl font-semibold text-gray-800 mb-3">Счастья</h4>
-                                <p class="text-gray-600">Нажмите, чтобы открыть</p>
-                                <div class="mt-4 text-sm text-gray-500">
-                                    <i class="fas fa-hand-point-up"></i> Кликните
-                                </div>
-                            </div>
-                            <div class="flip-card-back bg-gradient-to-br from-birthday-pink to-pink-400 text-white">
-                                <h4 class="text-2xl font-bold mb-4">Бесконечного счастья!</h4>
-                                <p class="text-lg mb-3">Пусть каждый день приносит тебе улыбки, радостные моменты и ощущение полного счастья!</p>
-                                <p class="text-sm opacity-90">Желаю, чтобы жизнь была наполнена светом, любовью и гармонией!</p>
-                                <div class="mt-4 text-3xl">
-                                    <i class="fas fa-sun"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-
-                    <div class="flip-card" id="success-card" onclick="flipCard('success')">
-                        <div class="flip-card-inner">
-                            <div class="flip-card-front bg-gradient-to-br from-birthday-gold/20 to-white">
-                                <div class="text-5xl mb-6 text-birthday-gold">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <h4 class="text-2xl font-semibold text-gray-800 mb-3">Успехов</h4>
-                                <p class="text-gray-600">Нажмите, чтобы открыть</p>
-                                <div class="mt-4 text-sm text-gray-500">
-                                    <i class="fas fa-hand-point-up"></i> Кликните
-                                </div>
-                            </div>
-                            <div class="flip-card-back bg-gradient-to-br from-birthday-gold to-yellow-400 text-gray-800">
-                                <h4 class="text-2xl font-bold mb-4">Огромных успехов!</h4>
-                                <p class="text-lg mb-3">Желаю достигать всех поставленных целей, покорять новые вершины и реализовывать самые смелые мечты!</p>
-                                <p class="text-sm opacity-90">Пусть удача сопутствует во всех начинаниях!</p>
-                                <div class="mt-4 text-3xl">
-                                    <i class="fas fa-trophy"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="text-center mt-6 text-gray-600">
-                    <p><i class="fas fa-info-circle mr-2"></i>Нажмите на любое окошко, чтобы перевернуть его и прочитать поздравление</p>
-                </div>
-            </div>
-
-
-            <div class="text-center mb-10">
-                <button 
-                    onclick="resetCards()"
-                    class="bg-gradient-to-r from-gray-700 to-gray-900 text-white font-semibold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 flex items-center justify-center gap-2 mx-auto"
-                >
-                    <i class="fas fa-redo"></i>
-                    Перевернуть все окошки обратно
-                </button>
-            </div>
-
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
-                <div class="text-center">
-                    <div class="mb-4 text-5xl text-birthday-pink">
-                        <i class="fas fa-birthday-cake"></i>
-                    </div>
-                    <h4 class="text-2xl font-dancing text-gray-800 mb-2">Праздничный торт</h4>
-                    <p class="text-gray-600">Самый вкусный торт со свечами для загадывания желаний</p>
-                </div>
-                
-                <div class="text-center">
-                    <div class="mb-4 text-5xl text-birthday-blue">
-                        <i class="fas fa-cloud"></i>
-                    </div>
-                    <h4 class="text-2xl font-dancing text-gray-800 mb-2">Воздушные шары</h4>
-                    <p class="text-gray-600">Разноцветные шары для создания праздничной атмосферы</p>
-                </div>
-                
-                <div class="text-center">
-                    <div class="mb-4 text-5xl text-birthday-gold">
-                        <i class="fas fa-gift"></i>
-                    </div>
-                    <h4 class="text-2xl font-dancing text-gray-800 mb-2">Подарки</h4>
-                    <p class="text-gray-600">Красиво упакованные сюрпризы для особенного дня</p>
-                </div>
-                
-                <div class="text-center">
-                    <div class="mb-4 text-5xl text-birthday-purple">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <h4 class="text-2xl font-dancing text-gray-800 mb-2">Праздничное настроение</h4>
-                    <p class="text-gray-600">Конфетти, улыбки и море положительных эмоций</p>
-                </div>
-            </div>
-
-
-            <div class="flex flex-col sm:flex-row gap-6 justify-center mb-8">
-                <button 
-                    onclick="createConfetti()"
-                    class="flex-1 bg-gradient-to-r from-birthday-gold to-yellow-500 text-gray-800 font-semibold py-4 px-6 rounded-xl hover:opacity-90 transition-all duration-300 flex items-center justify-center gap-3 text-lg hover:scale-[1.02] active:scale-[0.98]"
-                >
-                    <i class="fas fa-fireworks"></i>
-                    Запустить конфетти
-                </button>
-                <button 
-                    onclick="shareCard()"
-                    class="flex-1 bg-gradient-to-r from-birthday-purple to-purple-600 text-white font-semibold py-4 px-6 rounded-xl hover:opacity-90 transition-all duration-300 flex items-center justify-center gap-3 text-lg hover:scale-[1.02] active:scale-[0.98]"
-                >
-                    <i class="fas fa-share-alt"></i>
-                    Поделиться открыткой
-                </button>
-            </div>
-        </main>
-
-        <footer class="text-center text-white/80 py-10">
-            <p class="text-2xl mb-4">С наилучшими пожеланиями.</p>
-            <div class="mt-8 flex justify-center space-x-8 text-3xl">
-                <i class="fas fa-heart text-birthday-pink animate-pulse"></i>
-                <i class="fas fa-star text-birthday-gold animate-spin" style="animation-duration: 3s"></i>
-                <i class="fas fa-gift text-birthday-blue"></i>
-                <i class="fas fa-glass-cheers text-birthday-purple"></i>
-            </div>
-            <button 
-                onclick="scrollToTop()"
-                class="mt-8 bg-white/20 backdrop-blur-sm text-white py-3 px-6 rounded-full hover:bg-white/30 transition-all duration-300 flex items-center gap-2 mx-auto"
-            >
-                <i class="fas fa-chevron-up"></i>
-                Наверх
-            </button>
-        </footer>
+  <!-- DIALOGUE -->
+  <div id="dialogueScene" class="scene">
+    <div class="dbox" id="dbox" style="width:100%;">
+      <div class="speaker" id="speaker"></div>
+      <div class="text" id="dtext"></div>
+      <div class="more" id="more">&#9654;</div>
     </div>
+  </div>
 
-    <script>
+  <!-- CARD -->
+  <div id="cardScene" class="scene">
+    <div class="grad-text">* С ДНЁМ РОЖДЕНИЯ,<br><span id="nameTitle"></span>!</div>
+    <div id="bigNum">20</div>
+    <div class="spam">
+      [НАСТОЯЩИЙ [ЛУЧШИЙ ДРУГ]]!!! ТЕБЕ УЖЕ <b>20</b>?!
+      ЭТО ЗНАЧИТ ТЫ ПОЛУЧАЕШЬ <span style="color:#00ff66">[СКИДКУ 50% НА ВЗРОСЛУЮ ЖИЗНЬ]</span>!!!
+      НО ПОДОЖДИ!!! ЕЩЁ БОЛЬШЕ [HYPERLINK BLOCKED]!!!
+    </div>
+    <div class="stats">
+      УРОВЕНЬ: <b>20</b> &nbsp;&nbsp; ЛЮБОВЬ: <b>&#8734;</b> &nbsp;&nbsp; DETERMINATION: <b>MAX</b><br>
+      ХП: <b>&#9829;&#9829;&#9829;&#9829;&#9829;</b> &nbsp;&nbsp; ТОРТ: <b>НЕ ПОДГОРЕЛ (почти)</b><br>
+      ИМЯНИННИК: <b id="nameBox"></b>
+    </div>
+    <div class="controls">
+      <button class="btn" id="musicBtn">&#9834; МУЗЫКА: ВКЛ</button>
+      <button class="btn" id="partyBtn">&#10024; ЗАПУСТИТЬ ШУМ ИЗ [Z]</button>
+      <button class="btn" id="againBtn">&#8635; СНАЧАЛА</button>
+    </div>
+    <div class="footer">
+      * Ты наполнен <span class="hl">[ДЕТЕРМИНАЦИЕЙ]</span>... и торт почти цел.<br>
+      С 20-летием! Пусть этот год будет как <span class="hl">[HYPERLINK BLOCKED]</span> — лучше, чем кажется.
+    </div>
+  </div>
+</div>
 
-        const cardStates = {
-            health: false,
-            happiness: false,
-            success: false
-        };
+<script>
+/* ================= КОНФИГ ================= */
+const NAME = new URLSearchParams(location.search).get('name') || 'Марат';
+document.getElementById('nameTitle').textContent = NAME.toUpperCase();
+document.getElementById('nameBox').textContent = NAME;
 
-        function flipCard(cardType) {
-            const card = document.getElementById(`${cardType}-card`);
-            cardStates[cardType] = !cardStates[cardType];
-            
-            if (cardStates[cardType]) {
-                card.classList.add("flipped");
+/* ================= ЧАСТИЦЫ (SOUL) ================= */
+const GLYPHS = ['\u2665','\u2660','\u2663','\u2666','Z'];
+const COLORS = ['#ff0033','#00ff66','#00ccff','#ffee00','#ff8800'];
+for (let i = 0; i < 26; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.textContent = GLYPHS[i % GLYPHS.length];
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.color = COLORS[i % COLORS.length];
+  p.style.fontSize = (10 + Math.random() * 16) + 'px';
+  p.style.animationDuration = (7 + Math.random() * 9) + 's';
+  p.style.animationDelay = (-Math.random() * 10) + 's';
+  document.getElementById('stage').appendChild(p);
+}
 
-                createMiniConfetti();
-            } else {
-                card.classList.remove("flipped");
-            }
+/* ================= МУЗЫКА =================
+   Новая тема: D-минор, драйвовый боевой мотив в духе "Rude Buster" / "Smart Race".
+   Прогрессия: i – i – VI – V – i – III – iv – V
+   ============================================ */
+let ac = null, master = null, musicOn = true, musicTimer = null, schedTime = 0, schedStep = 0;
 
-            const flipSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ");
-            flipSound.volume = 0.3;
-            flipSound.play().catch(e => console.log("Audio play failed:", e));
-        }
+const BPM = 152;
+const SPB = 60 / BPM;        // сек/доля
+const EIGHTH = SPB / 2;      // сек/восьмая
+const LOOP_STEPS = 64;       // 8 тактов × 8 восьмых
 
+// Мелодия D-минор: [midi, старт(в восьмых), длина(в восьмых)]
+const LEAD = [
+  // такт 1 (Dm):  D F A F D F E D
+  [74,0,1],[77,1,1],[81,2,1],[77,3,1],[74,4,1],[77,5,1],[76,6,1],[74,7,1],
+  // такт 2 (Dm):  D F A C6 A F E D
+  [74,8,1],[77,9,1],[81,10,1],[84,11,1],[81,12,1],[77,13,1],[76,14,1],[74,15,1],
+  // такт 3 (Bb):  Bb D F D Bb D C Bb
+  [70,16,1],[74,17,1],[77,18,1],[74,19,1],[70,20,1],[74,21,1],[72,22,1],[70,23,1],
+  // такт 4 (A):   A C# E C# A C# B A
+  [69,24,1],[73,25,1],[76,26,1],[73,27,1],[69,28,1],[73,29,1],[71,30,1],[69,31,1],
+  // такт 5 (Dm):  повтор такт 1
+  [74,32,1],[77,33,1],[81,34,1],[77,35,1],[74,36,1],[77,37,1],[76,38,1],[74,39,1],
+  // такт 6 (F):   F A C6 A F A G F
+  [77,40,1],[81,41,1],[84,42,1],[81,43,1],[77,44,1],[81,45,1],[79,46,1],[77,47,1],
+  // такт 7 (Gm):  G Bb D6 Bb G Bb A G
+  [79,48,1],[82,49,1],[86,50,1],[82,51,1],[79,52,1],[82,53,1],[81,54,1],[79,55,1],
+  // такт 8 (A):   A C# E A G E D C#  →  держим последнюю
+  [69,56,1],[73,57,1],[76,58,1],[81,59,1],[79,60,1],[76,61,1],[74,62,1],[73,63,6]
+];
 
-        function resetCards() {
-            Object.keys(cardStates).forEach(cardType => {
-                const card = document.getElementById(`${cardType}-card`);
-                card.classList.remove("flipped");
-                cardStates[cardType] = false;
-            });
-        }
+// Бас: root–fifth по половинкам такта в той же прогрессии
+const BASS_ROOTS = [50, 50, 46, 45, 50, 41, 43, 45]; // D D Bb A D F G A
+const BASS = [];
+BASS_ROOTS.forEach((r, i) => {
+  BASS.push([r, i*8+0, 2], [r+7, i*8+2, 2], [r, i*8+4, 2], [r+7, i*8+6, 2]);
+});
 
-        function createMiniConfetti() {
-            const container = document.getElementById("confetti-container");
-            const colors = ["#FFD700", "#FF69B4", "#87CEEB"];
-            
-            for (let i = 0; i < 30; i++) {
-                const confetti = document.createElement("div");
-                confetti.className = "confetti";
-                confetti.style.left = `${Math.random() * 100}vw`;
-                confetti.style.top = `${Math.random() * 100}vh`;
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.width = `${Math.random() * 10 + 3}px`;
-                confetti.style.height = confetti.style.width;
-                confetti.style.borderRadius = Math.random() > 0.5 ? "50%" : "0";
-                confetti.style.animation = `confetti-fall ${Math.random() * 2 + 1}s linear forwards`;
-                
-                container.appendChild(confetti);
-                
-                setTimeout(() => {
-                    confetti.remove();
-                }, 3000);
-            }
-        }
+const m2f = m => 440 * Math.pow(2, (m - 69) / 12);
 
+function initAudio() {
+  if (ac) return;
+  ac = new (window.AudioContext || window.webkitAudioContext)();
+  master = ac.createGain();
+  master.gain.value = 0.5;
+  master.connect(ac.destination);
+}
 
-        function scrollToContent() {
-            document.getElementById("main-content").scrollIntoView({ 
-                behavior: "smooth",
-                block: "start"
-            });
-        }
+function tone(freq, t, dur, type, vol, slide) {
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(freq, t);
+  if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + dur);
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g); g.connect(master);
+  o.start(t); o.stop(t + dur + 0.02);
+}
 
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-        }
+function noiseHit(t, dur, vol, hp) {
+  const buf = ac.createBuffer(1, ac.sampleRate * dur, ac.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const src = ac.createBufferSource(); src.buffer = buf;
+  const f = ac.createBiquadFilter(); f.type = hp ? 'highpass' : 'lowpass';
+  f.frequency.value = hp ? 6000 : 400;
+  const g = ac.createGain();
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  src.connect(f); f.connect(g); g.connect(master);
+  src.start(t); src.stop(t + dur);
+}
 
+function scheduleStep(step, t) {
+  if (!musicOn) return;
+  const s = step % LOOP_STEPS;
 
-        function createConfetti() {
-            const container = document.getElementById("confetti-container");
-            const colors = ["#FFD700", "#FF69B4", "#87CEEB", "#9370DB", "#FFA500", "#00FF7F"];
-            
+  LEAD.forEach(([m, st, l]) => {
+    if (m && st === s) tone(m2f(m), t, l * EIGHTH * 0.9, 'square', 0.11);
+  });
+  BASS.forEach(([m, st, l]) => {
+    if (st === s) tone(m2f(m), t, l * EIGHTH * 0.85, 'triangle', 0.22);
+  });
 
-            container.innerHTML = "";
-            
+  // Барабаны: kick 1, 3 + синкопа на "и" 4; snare 2, 4; hat на восьмых
+  if (s % 16 === 0 || s % 16 === 8) noiseHit(t, 0.10, 0.30, false);
+  if (s % 16 === 14)                  noiseHit(t, 0.08, 0.22, false);
+  if (s % 16 === 4 || s % 16 === 12)  noiseHit(t, 0.09, 0.16, true);
+  if (s % 2 === 0)                    noiseHit(t, 0.03, 0.05, true);
+}
 
-            for (let i = 0; i < 150; i++) {
-                const confetti = document.createElement("div");
-                confetti.className = "confetti";
-                confetti.style.left = `${Math.random() * 100}vw`;
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.width = `${Math.random() * 20 + 5}px`;
-                confetti.style.height = confetti.style.width;
-                confetti.style.borderRadius = Math.random() > 0.5 ? "50%" : "0";
-                confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
-                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
-                
-                container.appendChild(confetti);
-                
+function musicLoop() {
+  while (schedTime < ac.currentTime + 0.2) {
+    scheduleStep(schedStep, schedTime);
+    schedTime += EIGHTH;
+    schedStep++;
+  }
+}
 
-                setTimeout(() => {
-                    confetti.remove();
-                }, 7000);
-            }
-        }
+function startMusic() {
+  initAudio();
+  schedTime = ac.currentTime + 0.1;
+  schedStep = 0;
+  if (musicTimer) clearInterval(musicTimer);
+  musicTimer = setInterval(musicLoop, 60);
+}
 
+function blip() {
+  if (!ac) return;
+  tone(950 + Math.random() * 120, ac.currentTime, 0.045, 'square', 0.06);
+}
 
-        function shareCard() {
-            const shareText = `🎉 С Днём Рождения! 🎂\n\nПусть этот день будет наполнен радостью и счастьем!\n\nПосмотрите эту интерактивную открытку с 3D-окошками!`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: "С Днём Рождения!",
-                    text: shareText,
-                    url: window.location.href
-                });
-            } else {
-                navigator.clipboard.writeText(shareText).then(() => {
-                    alert("Текст поздравления скопирован в буфер обмена! 📋\nТеперь вы можете отправить его в любом мессенджере.");
-                });
-            }
-        }
+function zSpamBurst() {
+  if (!ac) return;
+  for (let i = 0; i < 10; i++) {
+    tone(400 + Math.random() * 1200, ac.currentTime + i * 0.05, 0.08, 'square', 0.08);
+  }
+  const n = document.getElementById('bigNum');
+  n.classList.add('glitching');
+  setTimeout(() => n.classList.remove('glitching'), 1500);
+}
 
+/* ================= ДИАЛОГИ =================
+   Порядок: SUSIE → RALSEI → LANCER → GASTER×2 → KRIS → SPAMTON×2 → SYSTEM
+   GASTER — ЦЕЛЬНЫЙ (полные фразы, без "битых" символов и [ДАННЫЕ УДАЛЕНЫ])
+   SPAMTON — "БИТЫЙ" (пропущенные буквы _ , глитч-символ ▓, рваные скобки)
+*/
+const LINES = [
+  { who: 'SUSIE', text: '* Эй, Марат.\n* Двадцать, да? Хех.\n* Теперь ты ОФИЦИАЛЬНО слишком стар, чтобы говорить [я просто полежу 5 минут].' },
+  { who: 'RALSEI', text: '* С днём рождения, ' + NAME + '!\n* Я испёк для тебя торт!\n* ...он немного подгорел, но в него положили ДОХОДЯГ!\n* Это фирменный рецепт!' },
+  { who: 'LANCER', text: '* Я, ЛАНСЕР, ОБЪЯВЛЯЮ ТЕБЯ...\n* КОРОЛЁМ ДНЯ РОЖДЕНИЯ!!! Хо-хо!\n* В награду получи [БЕСПЛАТНЫЕ ХАХА]!!!' },
+  // GASTER — цельная, связная речь
+  { who: 'GASTER', text: '* Я НАБЛЮДАЮ ЗА ТОБОЙ С САМОГО ТВОЕГО РОЖДЕНИЯ.\n* ДВАДЦАТЬ ЛЕТ ПРОЛЕТЕЛИ ОЧЕНЬ БЫСТРО.\n* Я ГОРЖУСЬ ТЕМ, КЕМ ТЫ СТАЛ.\n* С ДНЁМ РОЖДЕНИЯ, МАРАТ.' },
+  { who: 'GASTER', text: '* Я ЗНАЮ, ЧТО ТЫ ЛЮБИШЬ ТРИ ВЕЩИ БОЛЬШЕ ВСЕГО.\n* ДОХОДЯГИ, ЯДЕРКУ И ПИРАТОВ.\n* Я ВИДЕЛ, КАК ТЫ НАЖИМАЕШЬ КРАСНУЮ КНОПКУ И УХОДИШЬ В МОРЕ.\n* ЭТО НАПОМИНАЕТ МНЕ О ДОМЕ. ВЕСЬМА, ВЕСЬМА ИНТЕРЕСНО.' },
+  { who: 'KRIS', text: '* ...' },
+  // SPAMTON — рваные, повреждённые реплики
+  { who: 'SPAMTON', text: '* [[ЛУЧШИЙ ДРУГ]] МАРАТ!!! Я ЗН_Л, ЧТО [[ТЫ ПРИДЁШ▓]]!!!\n* ТЕБ_ 20!!! ЗНАЕШ_ ЧТО ЭТ_ ЗН_ЧИТ?!\n* ТЕПЕР_ ТЫ МОЖ_ШЬ БЫТЬ НАСТОЯЩИМ [BIG SH_Т]!!!\n* ВСЕГО 20$ — И [ТВОЯ ЖИЗН▓ ПРИНАДЛЕЖИТ МНЕ]!!!' },
+  { who: 'SPAMTON', text: '* НО ПОДОЖ_И!!! ЕСТ_ [СПЕЦ_АЛЬНОЕ ПРЕДЛОЖЕН_Е]!!!\n* КУПИ [ДЕНЬ РОЖДЕН▓Я 2] ВСЕГО ЗА [9999 KR_MER]!!!\n* И ПОЛУЧ_ [БЕСПЛАТНО] [ЕЩЁ ОД_Н Г_Д ЖИЗН_]!!!\n* АКТИРУ_ [СЕЙЧ_С] — И [СУДЬБ▓ ИЗМЕН_ТСЯ]!!! ХИ-ХИ-ХИ!!!' },
+  { who: 'SYSTEM', text: '* ВЫ ПРОШЛИ [КВЕСТ ДНЯ РОЖДЕНИЯ]!\n* ПОЛУЧЕНО: +1 ГОД, +20 ЛЕТ ОПЫТА, +∞ ЛЮБВИ.\n* НАЖМИ [Z], ЧТОБЫ ОТКРЫТЬ ОТКРЫТКУ.' }
+];
 
-        window.addEventListener("load", () => {
-            setTimeout(createConfetti, 1000);
-            
+const titleScene = document.getElementById('titleScene');
+const dlgScene   = document.getElementById('dialogueScene');
+const cardScene  = document.getElementById('cardScene');
+const dbox  = document.getElementById('dbox');
+const dtext = document.getElementById('dtext');
+const speaker = document.getElementById('speaker');
+const more = document.getElementById('more');
 
-            setInterval(createConfetti, 20000);
-            
+let lineIdx = 0, typing = null, typeDone = false;
 
-            setTimeout(() => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
-            }, 500);
-        });
+const SPEAKER_COLORS = {
+  SUSIE: '#b58cff', RALSEI: '#3bd17d', SPAMTON: '#ffee00', KRIS: '#00ccff', SYSTEM: '#ff0033', GASTER: '#9a9a9a'
+};
 
-        let scrollIndicator = document.querySelector(".scroll-indicator");
-        window.addEventListener("scroll", () => {
-            if (window.scrollY > 100) {
-                scrollIndicator.style.opacity = "0";
-                scrollIndicator.style.pointerEvents = "none";
-            } else {
-                scrollIndicator.style.opacity = "1";
-                scrollIndicator.style.pointerEvents = "auto";
-            }
-        });
+function showScene(el) {
+  [titleScene, dlgScene, cardScene].forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+}
 
+function typeLine() {
+  speaker.textContent = LINES[lineIdx].who;
+  speaker.style.color = SPEAKER_COLORS[LINES[lineIdx].who] || '#fff';
+  dtext.textContent = '';
+  typeDone = false;
+  more.classList.remove('show');
+  let i = 0;
+  clearInterval(typing);
+  typing = setInterval(() => {
+    dtext.textContent += LINES[lineIdx].text[i];
+    if (LINES[lineIdx].text[i] !== ' ' && LINES[lineIdx].text[i] !== '\n' && i % 2 === 0) blip();
+    i++;
+    if (i >= LINES[lineIdx].text.length) {
+      clearInterval(typing);
+      typeDone = true;
+      more.classList.add('show');
+    }
+  }, 38);
+}
 
-        setTimeout(() => {
-            flipCard("health");
-            setTimeout(() => flipCard("happiness"), 300);
-            setTimeout(() => flipCard("success"), 600);
-            setTimeout(resetCards, 3000);
-        }, 5000);
-    </script>
+function advance() {
+  if (!typeDone) {
+    clearInterval(typing);
+    dtext.textContent = LINES[lineIdx].text;
+    typeDone = true;
+    more.classList.add('show');
+    return;
+  }
+  lineIdx++;
+  if (lineIdx >= LINES.length) {
+    showScene(cardScene);
+    zSpamBurst();
+    return;
+  }
+  typeLine();
+}
+
+function startAll() {
+  initAudio();
+  if (ac.state === 'suspended') ac.resume();
+  startMusic();
+  document.getElementById('musicBtn').textContent = '\u266B МУЗЫКА: ВКЛ';
+  lineIdx = 0;
+  showScene(dlgScene);
+  typeLine();
+}
+
+document.getElementById('startBtn').addEventListener('click', startAll);
+titleScene.addEventListener('click', startAll);
+dbox.addEventListener('click', advance);
+document.addEventListener('keydown', e => {
+  if (e.key === 'z' || e.key === 'Z' || e.key === 'я' || e.key === 'Я' || e.key === 'Enter') {
+    if (dlgScene.classList.contains('active')) advance();
+    else if (titleScene.classList.contains('active')) startAll();
+  }
+});
+
+document.getElementById('musicBtn').addEventListener('click', function () {
+  musicOn = !musicOn;
+  this.innerHTML = musicOn ? '&#9834; МУЗЫКА: ВКЛ' : '&#9834; МУЗЫКА: ВЫКЛ';
+  if (musicOn && ac && !musicTimer) { schedTime = ac.currentTime + 0.1; musicLoop(); musicTimer = setInterval(musicLoop, 60); }
+  if (!musicOn && musicTimer) { clearInterval(musicTimer); musicTimer = null; }
+});
+
+document.getElementById('partyBtn').addEventListener('click', () => {
+  zSpamBurst();
+  if (ac) {
+    for (let i = 0; i < 14; i++) {
+      const t = ac.currentTime + i * 0.09;
+      tone(m2f([72, 76, 79, 84][i % 4]), t, 0.15, 'square', 0.09);
+    }
+  }
+});
+
+document.getElementById('againBtn').addEventListener('click', () => {
+  showScene(titleScene);
+});
+</script>
 </body>
 </html>
