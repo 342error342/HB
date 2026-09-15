@@ -84,7 +84,12 @@
   }
   .dbox .more.show { opacity: 1; }
 
-  #cardScene { gap: 18px; text-align: center; z-index: 2; padding: 20px; }
+  #cardScene {
+    gap: 18px; text-align: center; z-index: 2;
+    padding: 24px 20px;
+    overflow-y: auto;
+    max-height: 100vh;
+  }
   .grad-text {
     font-size: clamp(16px, 4vw, 34px);
     background: linear-gradient(90deg, #ff0033, #ff8800, #ffee00, #00ff66, #00ccff);
@@ -140,12 +145,26 @@
     max-width: 90vw;
   }
   .footer .hl { color: #ffee00; }
+
+  .antelope {
+    margin-top: 6px;
+    font-size: clamp(11px, 2.9vw, 20px);
+    line-height: 1.8;
+    color: #ff9ecb;
+    text-shadow: 0 0 10px #ff9ecb, 0 0 26px #ff5fa8, 0 0 46px #ff5fa8;
+    animation: antPulse 1.7s ease-in-out infinite;
+    letter-spacing: 1px;
+  }
+  .antelope .ice { color: #bfe9ff; text-shadow: 0 0 12px #9fe8ff, 0 0 30px #9fe8ff; }
+  @keyframes antPulse {
+    0%, 100% { transform: scale(1);    opacity: .85; }
+    50%      { transform: scale(1.06); opacity: 1;   }
+  }
 </style>
 </head>
 <body>
 <div id="stage">
 
-  <!-- TITLE -->
   <div id="titleScene" class="scene active">
     <div class="soul">&#9829;</div>
     <div class="grad-text" style="font-size:clamp(12px,3vw,22px); line-height:1.8; text-align:center;">
@@ -155,7 +174,6 @@
     <div style="font-size:clamp(8px,1.5vw,10px); color:#888;">(&#9829; = SOUL &nbsp; Z = диалог дальше)</div>
   </div>
 
-  <!-- DIALOGUE -->
   <div id="dialogueScene" class="scene">
     <div class="dbox" id="dbox" style="width:100%;">
       <div class="speaker" id="speaker"></div>
@@ -164,7 +182,6 @@
     </div>
   </div>
 
-  <!-- CARD -->
   <div id="cardScene" class="scene">
     <div class="grad-text">* С ДНЁМ РОЖДЕНИЯ,<br><span id="nameTitle"></span>!</div>
     <div id="bigNum">20</div>
@@ -187,16 +204,17 @@
       * Ты наполнен <span class="hl">[ДЕТЕРМИНАЦИЕЙ]</span>... и торт почти цел.<br>
       С 20-летием! Пусть этот год будет как <span class="hl">[HYPERLINK BLOCKED]</span> — лучше, чем кажется.
     </div>
+    <div class="antelope">
+      &#10052; <span class="ice">ВЫХОДИ ЗА МЕНЯ, АНТИЛОПА</span> &#10052;
+    </div>
   </div>
 </div>
 
 <script>
-/* ================= КОНФИГ ================= */
 const NAME = new URLSearchParams(location.search).get('name') || 'Марат';
 document.getElementById('nameTitle').textContent = NAME.toUpperCase();
 document.getElementById('nameBox').textContent = NAME;
 
-/* ================= ЧАСТИЦЫ (SOUL) ================= */
 const GLYPHS = ['\u2665','\u2660','\u2663','\u2666','Z'];
 const COLORS = ['#ff0033','#00ff66','#00ccff','#ffee00','#ff8800'];
 for (let i = 0; i < 26; i++) {
@@ -211,39 +229,25 @@ for (let i = 0; i < 26; i++) {
   document.getElementById('stage').appendChild(p);
 }
 
-/* ================= МУЗЫКА =================
-   Новая тема: D-минор, драйвовый боевой мотив в духе "Rude Buster" / "Smart Race".
-   Прогрессия: i – i – VI – V – i – III – iv – V
-   ============================================ */
 let ac = null, master = null, musicOn = true, musicTimer = null, schedTime = 0, schedStep = 0;
 
 const BPM = 152;
-const SPB = 60 / BPM;        // сек/доля
-const EIGHTH = SPB / 2;      // сек/восьмая
-const LOOP_STEPS = 64;       // 8 тактов × 8 восьмых
+const SPB = 60 / BPM;
+const EIGHTH = SPB / 2;
+const LOOP_STEPS = 64;
 
-// Мелодия D-минор: [midi, старт(в восьмых), длина(в восьмых)]
 const LEAD = [
-  // такт 1 (Dm):  D F A F D F E D
   [74,0,1],[77,1,1],[81,2,1],[77,3,1],[74,4,1],[77,5,1],[76,6,1],[74,7,1],
-  // такт 2 (Dm):  D F A C6 A F E D
   [74,8,1],[77,9,1],[81,10,1],[84,11,1],[81,12,1],[77,13,1],[76,14,1],[74,15,1],
-  // такт 3 (Bb):  Bb D F D Bb D C Bb
   [70,16,1],[74,17,1],[77,18,1],[74,19,1],[70,20,1],[74,21,1],[72,22,1],[70,23,1],
-  // такт 4 (A):   A C# E C# A C# B A
   [69,24,1],[73,25,1],[76,26,1],[73,27,1],[69,28,1],[73,29,1],[71,30,1],[69,31,1],
-  // такт 5 (Dm):  повтор такт 1
   [74,32,1],[77,33,1],[81,34,1],[77,35,1],[74,36,1],[77,37,1],[76,38,1],[74,39,1],
-  // такт 6 (F):   F A C6 A F A G F
   [77,40,1],[81,41,1],[84,42,1],[81,43,1],[77,44,1],[81,45,1],[79,46,1],[77,47,1],
-  // такт 7 (Gm):  G Bb D6 Bb G Bb A G
   [79,48,1],[82,49,1],[86,50,1],[82,51,1],[79,52,1],[82,53,1],[81,54,1],[79,55,1],
-  // такт 8 (A):   A C# E A G E D C#  →  держим последнюю
   [69,56,1],[73,57,1],[76,58,1],[81,59,1],[79,60,1],[76,61,1],[74,62,1],[73,63,6]
 ];
 
-// Бас: root–fifth по половинкам такта в той же прогрессии
-const BASS_ROOTS = [50, 50, 46, 45, 50, 41, 43, 45]; // D D Bb A D F G A
+const BASS_ROOTS = [50, 50, 46, 45, 50, 41, 43, 45];
 const BASS = [];
 BASS_ROOTS.forEach((r, i) => {
   BASS.push([r, i*8+0, 2], [r+7, i*8+2, 2], [r, i*8+4, 2], [r+7, i*8+6, 2]);
@@ -295,7 +299,6 @@ function scheduleStep(step, t) {
     if (st === s) tone(m2f(m), t, l * EIGHTH * 0.85, 'triangle', 0.22);
   });
 
-  // Барабаны: kick 1, 3 + синкопа на "и" 4; snare 2, 4; hat на восьмых
   if (s % 16 === 0 || s % 16 === 8) noiseHit(t, 0.10, 0.30, false);
   if (s % 16 === 14)                  noiseHit(t, 0.08, 0.22, false);
   if (s % 16 === 4 || s % 16 === 12)  noiseHit(t, 0.09, 0.16, true);
@@ -333,21 +336,14 @@ function zSpamBurst() {
   setTimeout(() => n.classList.remove('glitching'), 1500);
 }
 
-/* ================= ДИАЛОГИ =================
-   Порядок: SUSIE → RALSEI → LANCER → GASTER×2 → KRIS → SPAMTON×2 → SYSTEM
-   GASTER — ЦЕЛЬНЫЙ (полные фразы, без "битых" символов и [ДАННЫЕ УДАЛЕНЫ])
-   SPAMTON — "БИТЫЙ" (пропущенные буквы _ , глитч-символ ▓, рваные скобки)
-*/
 const LINES = [
-  { who: 'SUSIE', text: '* Эй, Марат.\n* Двадцать, да? Хех.\n* Теперь ты ОФИЦИАЛЬНО слишком стар, чтобы говорить [я просто полежу 5 минут].' },
+  { who: 'SUSIE', text: '* Эй, ' + NAME + '.\n* Двадцать, да? Хех.\n* Теперь ты ОФИЦИАЛЬНО слишком стар, чтобы говорить [я просто полежу 5 минут].' },
   { who: 'RALSEI', text: '* С днём рождения, ' + NAME + '!\n* Я испёк для тебя торт!\n* ...он немного подгорел, но в него положили ДОХОДЯГ!\n* Это фирменный рецепт!' },
   { who: 'LANCER', text: '* Я, ЛАНСЕР, ОБЪЯВЛЯЮ ТЕБЯ...\n* КОРОЛЁМ ДНЯ РОЖДЕНИЯ!!! Хо-хо!\n* В награду получи [БЕСПЛАТНЫЕ ХАХА]!!!' },
-  // GASTER — цельная, связная речь
-  { who: 'GASTER', text: '* Я НАБЛЮДАЮ ЗА ТОБОЙ С САМОГО ТВОЕГО РОЖДЕНИЯ.\n* ДВАДЦАТЬ ЛЕТ ПРОЛЕТЕЛИ ОЧЕНЬ БЫСТРО.\n* Я ГОРЖУСЬ ТЕМ, КЕМ ТЫ СТАЛ.\n* С ДНЁМ РОЖДЕНИЯ, МАРАТ.' },
+  { who: 'GASTER', text: '* Я НАБЛЮДАЮ ЗА ТОБОЙ С САМОГО ТВОЕГО РОЖДЕНИЯ.\n* ДВАДЦАТЬ ЛЕТ ПРОЛЕТЕЛИ ОЧЕНЬ БЫСТРО.\n* Я ГОРЖУСЬ ТЕМ, КЕМ ТЫ СТАЛ.\n* С ДНЁМ РОЖДЕНИЯ, ' + NAME.toUpperCase() + '.' },
   { who: 'GASTER', text: '* Я ЗНАЮ, ЧТО ТЫ ЛЮБИШЬ ТРИ ВЕЩИ БОЛЬШЕ ВСЕГО.\n* ДОХОДЯГИ, ЯДЕРКУ И ПИРАТОВ.\n* Я ВИДЕЛ, КАК ТЫ НАЖИМАЕШЬ КРАСНУЮ КНОПКУ И УХОДИШЬ В МОРЕ.\n* ЭТО НАПОМИНАЕТ МНЕ О ДОМЕ. ВЕСЬМА, ВЕСЬМА ИНТЕРЕСНО.' },
   { who: 'KRIS', text: '* ...' },
-  // SPAMTON — рваные, повреждённые реплики
-  { who: 'SPAMTON', text: '* [[ЛУЧШИЙ ДРУГ]] МАРАТ!!! Я ЗН_Л, ЧТО [[ТЫ ПРИДЁШ▓]]!!!\n* ТЕБ_ 20!!! ЗНАЕШ_ ЧТО ЭТ_ ЗН_ЧИТ?!\n* ТЕПЕР_ ТЫ МОЖ_ШЬ БЫТЬ НАСТОЯЩИМ [BIG SH_Т]!!!\n* ВСЕГО 20$ — И [ТВОЯ ЖИЗН▓ ПРИНАДЛЕЖИТ МНЕ]!!!' },
+  { who: 'SPAMTON', text: '* [[ЛУЧШИЙ ДРУГ]] ' + NAME.toUpperCase() + '!!! Я ЗН_Л, ЧТО [[ТЫ ПРИДЁШ▓]]!!!\n* ТЕБ_ 20!!! ЗНАЕШ_ ЧТО ЭТ_ ЗН_ЧИТ?!\n* ТЕПЕР_ ТЫ МОЖ_ШЬ БЫТЬ НАСТОЯЩИМ [BIG SH_Т]!!!\n* ВСЕГО 20$ — И [ТВОЯ ЖИЗН▓ ПРИНАДЛЕЖИТ МНЕ]!!!' },
   { who: 'SPAMTON', text: '* НО ПОДОЖ_И!!! ЕСТ_ [СПЕЦ_АЛЬНОЕ ПРЕДЛОЖЕН_Е]!!!\n* КУПИ [ДЕНЬ РОЖДЕН▓Я 2] ВСЕГО ЗА [9999 KR_MER]!!!\n* И ПОЛУЧ_ [БЕСПЛАТНО] [ЕЩЁ ОД_Н Г_Д ЖИЗН_]!!!\n* АКТИРУ_ [СЕЙЧ_С] — И [СУДЬБ▓ ИЗМЕН_ТСЯ]!!! ХИ-ХИ-ХИ!!!' },
   { who: 'SYSTEM', text: '* ВЫ ПРОШЛИ [КВЕСТ ДНЯ РОЖДЕНИЯ]!\n* ПОЛУЧЕНО: +1 ГОД, +20 ЛЕТ ОПЫТА, +∞ ЛЮБВИ.\n* НАЖМИ [Z], ЧТОБЫ ОТКРЫТЬ ОТКРЫТКУ.' }
 ];
@@ -363,7 +359,8 @@ const more = document.getElementById('more');
 let lineIdx = 0, typing = null, typeDone = false;
 
 const SPEAKER_COLORS = {
-  SUSIE: '#b58cff', RALSEI: '#3bd17d', SPAMTON: '#ffee00', KRIS: '#00ccff', SYSTEM: '#ff0033', GASTER: '#9a9a9a'
+  SUSIE: '#b58cff', RALSEI: '#3bd17d', SPAMTON: '#ffee00',
+  KRIS: '#00ccff', SYSTEM: '#ff0033', GASTER: '#9a9a9a'
 };
 
 function showScene(el) {
@@ -372,8 +369,9 @@ function showScene(el) {
 }
 
 function typeLine() {
-  speaker.textContent = LINES[lineIdx].who;
-  speaker.style.color = SPEAKER_COLORS[LINES[lineIdx].who] || '#fff';
+  const who = LINES[lineIdx].who;
+  speaker.textContent = who;
+  speaker.style.color = SPEAKER_COLORS[who] || '#fff';
   dtext.textContent = '';
   typeDone = false;
   more.classList.remove('show');
